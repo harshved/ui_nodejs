@@ -27,7 +27,7 @@ module.exports = {add,name,multiply};
 //5
 /*var http = require("http") //it imports the http
 var server = http.createServer(function(req, res){
-    res.writeHead(200, {"Content-Type": "text.html"});
+    res.writeHead(200, {"Content-Type": "text/html"});
     res.write("Hello to my server");
     res.end();
 }).listen(3000);
@@ -35,3 +35,29 @@ var server = http.createServer(function(req, res){
 console.log("Server is started");
 */
  
+//6
+/*
+var http = require("http");
+http.createServer(function(req, res){
+    if(req.url == "/student"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Student Page</h1>");
+        res.end();
+    }else if(req.url == "/admin"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Admin Page</h1>");
+        res.end();
+    }else{
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Default Page</h1>");
+        res.end();
+    }
+}).listen(3000);
+*/
+
+//7
+var name = {
+    fname: "Harsh",
+    lname: "Ved"
+};
+module.exports = {name};
