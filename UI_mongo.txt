@@ -1,0 +1,97 @@
+For Fetch:
+	Find: 
+		db.stud.find()
+	Find Pretty :
+		db.stud.find().pretty()
+	With condition:
+		db.stud.find({name:”CCC”}, {branch:”IT”}).pretty()
+
+For update:
+	Update One : To update only one record
+db.stud.updateOne({name:”CCC”}, {$set:{branch:”IT”}})
+	Update Many : To update many record
+db.stud.updateMany({branch:”CE”}, {$set:{branch:”IT”}})
+	update Upsert : If the record is found then update if not then insert
+		db.stud.update({name:”ABCD”}, {$set:{branch:”IT”}}, {upsert:true})
+
+For Delete:
+	Delete One : To delete only one record
+db.stud.deleteOne({name:”CCC”})
+	Delete Many : To delete many record
+db.stud.deleteMany({branch:”CE”})
+	delete all: to delete all the record
+		db.stud.deleteMany({})
+
+AND :
+	Db.stud.find({name:”CCC”, branch:”CE”})
+	Db.stud.find({$and: [{name: “CCC”}, {salary: {$lt: 10000}}]})
+
+OR Condition 
+	Db.stud.find({$or: [{name: “CCC”}, {salary: {$lt: 10000}}]})
+
+Multiple OR condition
+	Db.stud.find({salary: {$in: [“5000”, “10000”]}})
+
+Greater Than (gt)
+	Db.stud.find({salary: {$gt : 5000}}).pretty()
+Greater Than equal to (ge)
+	Db.stud.find({salary: {$ge : 5000}}).pretty()
+Less than (lt)
+	Db.stud.find({salary: {$lt : 5000}}).pretty()
+Less than equal to (le)
+	Db.stud.find({salary: {$le : 5000}}).pretty()
+
+REGEX
+Start with specific letter:
+	Db.stud.find({name: {$regex: /^m/ }})
+End with specific letter:
+	Db.stud.find({name: {$regex: /s$/ }})
+Contains any where in senctence or letter:
+	Db.stud.find({name: {$regex: /name/ }})
+Second letter will be specific:
+	Db.stud.find({name: {$regex: /^.m/}})
+
+For case-insenstive:
+	Db.stud.find({name: {$regex: /s$/, $options: ‘I’}})
+
+
+
+
+
+
+
+Find out those student whose result is greater than 90
+	Db.stud.find({result: {$gt: 90}}).pretty()
+
+Find out those student whose result is less than 50 and display only name, result field.
+	Db.stud.find({result: {$lt: 50}}, {name: 1, result: 1}).pretty()
+
+Find out those student whose status is either A or NA
+	Db.stud.find({status: {$in: [“A”, “NA”]}})
+
+Find out those student who r living in Rajkot or who r from English medium also sort the record in a descending order of name.
+	Db.stud.find({$or: [{city: “Rajkot”}, {medium: “English”}]}).sort({name: -1}).pretty()
+
+Find out those student who r studying in 6th sem and elective sub is’ UI
+	Db.stud.find({sem: “6th”}, {sub: “UI”}).pretty()
+
+1.	db.products.find({description: {$regex: /^M/}})
+2.	db.products.find({description: {$regex: /n$/}})
+3.	db.products.find({description: {$regex: /line/}})
+4.	db.products.find({description: {$regex: /^.i/}})
+5.	db.products.find({sku: {$regex: /xyz/, $option:’I’}})
+
+
+Aggregation: 
+•	It prints name with the field name _id, Here $name is the table field 
+Db.stud.aggregate([{$group: {_id: “$name”}}]) 
+•	It counts the total number of students with the field name Total_students
+Db.stud.aggregate([{$group: {_id: “$name”, “Total_students”: {$sum: 1}}}])
+•	It prints title, total books and average number of books
+Db.books.aggregate([{$group: {_id: “$title”, “Total_books”: {$sum: 1}, “Average_books”: {$avg: “$qty”}}}])
+•	It prints title, total books, average books and minimum number of books
+Db.stud.aggregate([{$group: {_id: “$title”}, “Total_books”: {$sum: 1}, “Average_books”: {$avg: “$qty”}, “Minimum_books”: {$min: “$qty”}}])
+•	It prints title, total books, average books, minimum books and maximum number of books 
+Db.stud.aggregate([{$group: {_id: “$title”}, “Total_books”: {$sum: 1}, “Average_books”: {$avg: “$qty”}, “Minimum_books”: {$min: “$qty”}, “Maximum_books”: {$max: “$qty”}}])
+•	It prints only title with the field name _id
+Db.stud.aggregate([{$group: {_id: “$title”}}])

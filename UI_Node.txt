@@ -1,0 +1,121 @@
+--------------
+index :
+
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const app = express();
+const router = require("./route");
+require("./schema");
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(router);
+
+app.listen(3000, () => {
+  console.log("connected with server");
+});
+
+-----------------
+mongoose
+  .connect("mongodb://localhost:27017/mydb")
+  .then(() => {
+    console.log("connected with db");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+--------------------
+route :
+
+const express = require("express");
+const mongoose = require("mongoose");
+const router = new express.Router();
+const Test = require("./schema");
+
+router.get("/clg", async (req, res) => {
+  const data = await Test.find();
+  res.send(data);
+});
+
+router.post("/clg", async (req, res) => {
+  const data = new Test({
+    name: req.body.name,
+    branch: req.body.branch,
+  });
+  await data.save((err, msg) => {
+    if (err) {
+      res.status(500).json({
+        error: err,
+      });
+    } else {
+      res.status(200).json({
+        message: msg,
+      });
+    }
+  });
+});
+
+module.exports = router;
+
+-------------------
+schema :
+
+const mongoose = require("mongoose");
+const userSchema = mongoose.Schema({
+  name: String,
+  branch: String,
+});
+
+const Test = mongoose.model("clgs", userSchema);
+module.exports = Test;
+
+--------------------
+Event :
+var events = require('events');
+var em = new  events.EventEmitter();
+em.on('eventName', (string, list) => {
+    console.log(string);
+    var sum = 0;
+    list.forEach((element) => {
+        sum += element;
+    })
+    console.log("Sum of the elements of the array is: " + sum);
+})
+
+em.emit('eventName', "Passed string", [1, 2, 3, 4]);
+
+/*
+NOTES:
+
+- EventEmitter is the class which is used to create and trigger events
+- on method is used to create the event
+- emit method is used to fire the event
+*/
+-------------------
+Create Server :
+var http = require(‘http’)	//it imports the http
+var server = http.createServer(function(req, res){
+	res.writeHead(200, {“Content-Type”: “text.html”});
+	res.write(“Hello to my server”);
+	res.end();
+}).listen(3000);
+console.log(“Server is started”);
+---
+var http = require("http");
+http.createServer(function(req, res){
+    if(req.url == "/student"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Student Page</h1>");
+        res.end();
+    }else if(req.url == "/admin"){
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Admin Page</h1>");
+        res.end();
+    }else{
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write("<h1>Default Page</h1>");
+        res.end();
+    }
+}).listen(3000);
