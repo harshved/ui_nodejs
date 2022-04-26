@@ -1,0 +1,52 @@
+(1)
+
+db.inventory.insertMany([{
+ "item": "nuts", "quantity": 30,
+ "carrier": { "name": "Shipit", "fee": 3 }
+ },
+ {
+ "item": "nuts", "quantity": 50,
+ "carrier": { "name": "Shipit", "fee": 3 }
+ },
+ {
+ "item": "bolts", "quantity": 50,
+ "carrier": { "name": "Cargo", "fee": 10 }
+ },
+ {
+ "item": "bolts", "quantity": 10,
+ "carrier": { "name": "Buzz", "fee": 2 }
+ },
+ {
+ "item": "bolts", "quantity": 20,
+ "carrier": { "name": "Craze", "fee": 4 }
+ },
+ {
+ "item": "washers", "quantity": 10,
+ "carrier": { "name": "Shipit", "fee": 1 }
+ },
+ {
+ "item": "washers", "quantity": 20,
+ "carrier": { "name": "buzz", "fee": 1 }
+ },
+ { 
+ "item": "screw-driver", "quantity": 30, 
+ "carrier": { "name": "Shipit", "fee": 30 } 
+ },
+ { 
+ "item": "screw-driver", "quantity": 30, 
+ "carrier": { "name": "Shipit", "fee": 30 } 
+ }
+])
+
+(4)
+
+(a):-
+db.inventory.find({item:{$regex:/s$/}})
+(b):-
+db.inventory.find({$or:[{carrier.fee:3},{carrier.fee:30}]})
+
+(5)
+db.inventory.aggregate([{$group:{_id:"$item",{$sum:1}}}])
+
+(6)
+db.inventory.find({},{item:1,quantity:1}).sort({quantity:1}).skip(1)
