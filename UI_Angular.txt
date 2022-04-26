@@ -1,0 +1,172 @@
+// Navbar
+// terminal - ng g c nav-bar
+// app.com.html - <app-nav-bar></app-nav-bar>
+
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/student" href="#">Student</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/result" href="#">Result</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/product" href="#">Product</a>
+        </li>    
+      </ul>
+    </div>  
+  </nav>
+
+// IF Condition :
+<h1 *ngIf="visible=='yes' else elseBlock">This is a header</h1>
+<ng-template #elseBlock>
+    <h1> This is else block</h1>
+</ng-template>
+
+// TS FIle :
+visible = 'yes';
+
+
+// For Loop
+<div class="container">
+    <h2>Student details</h2>
+    <div class="card-columns">
+      <div *ngFor="let stud of students; let i = index" class="card bg-info">
+        <div [routerLink]="['/resultdetails',{id:i}]" class="card-header text-uppercase text-center">
+            <h4>{{stud.erno}}</h4>
+        </div>
+        <div class="card-body text-center">
+          <img  [src]="stud.profile" class="rounded-circle">  
+          <p class="card-text">{{stud.name}}</p>
+          <p class="card-text">Some text inside the first card</p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<table class="table" id='tab'>
+    <thead>
+    <tr>
+        <th scope="col">Erno</th>
+        <th scope="col">Name</th>
+        <th scope="col">Profile</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let stud of lis;">
+        <td>{{ stud.erno}}</td>
+        <td>{{ stud.name}}</td>
+        <td>{{ stud.profile}}</td>
+    </tr>
+    </tbody>
+</table>
+
+// TS File :
+students:any[]=[
+    {id:1,erno:"20SOECE19019",name:"Tejas Patadiya", profile:"../assets/images/1.jpg"},
+    {id:2,erno:"20SOECE19011",name:"ABC Patadiya",profile:"../assets/images/1.jpg"},
+    {id:3,erno:"20SOECE19012",name:"DEF Patadiya",profile:"../assets/images/1.jpg"},
+    {id:4,erno:"20SOECE19013",name:"GHI Patadiya",profile:"../assets/images/1.jpg"},
+    {id:5,erno:"20SOECE19014",name:"JKL Patadiya",profile:"../assets/images/1.jpg"},
+  ]
+
+
+// FORM : 
+<form [formGroup]="studform" name="studform" (ngSubmit)=submit()>
+    <div>
+        <label for="fname">Enter Name:</label>
+        <input matInput formControlName="fname">
+        <input type="text" class="form-control" formControlName="fname">
+        <div class="alert alert-danger" *ngIf="studform.get('fname').invalid && (studform.get('fname').touched || studform.get('fname').dirty)">
+          <div *ngIf="studform.get('fname').errors.required">Please enter name</div>
+         <div *ngIf="studform.get('fname').errors.minlength">Minimun length should be three..!!</div>
+        </div>
+    </div>
+    <div>
+        <label for="pswd">Enter Password:</label>
+        <input type="password" class="form-control" formControlName="pswd">
+    </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+</form>
+
+// TS File :
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import {StudentService} from '../student.service';
+import { Istudent } from '../Student';
+import { ActivatedRoute, Router } from '@angular/router';
+
+constructor(private _studservice:StudentService,private activateroute:ActivatedRoute,private router:Router) { }
+  stud = new Istudent();
+  
+  ngOnInit() {    
+    if (this.activateroute.snapshot.paramMap.get('data')!=null){ 
+    this.stud = JSON.parse(this.activateroute.snapshot.paramMap.get('data'));
+      this.studform.controls['fname'].setValue(this.stud.name);
+      this.studform.controls['pswd'].setValue(this.stud.pswd);  
+    }
+  }
+studform = new FormGroup({
+  fname : new FormControl('',[Validators.required,Validators.minLength(3)]),
+  pswd:new FormControl('')
+})
+
+submit(){
+  if(this.stud._id==undefined){
+    //adding new student
+    this.stud.name = this.studform.get('fname').value;
+    this.stud.pswd = this.studform.get('pswd').value;
+    this._studservice.save(this.stud).subscribe(data => {
+      alert(data['message']);
+    })
+  }
+  else{
+    this.stud.name=this.studform.get('fname').value;
+    this.stud.pswd=this.studform.get('pswd').value;
+
+    this._studservice.updatestud(this.stud).subscribe((data:any[])=>{
+      data['message'].nModified==1?alert("updated successfully"):alert(JSON.stringify(data['message']));
+      this.router.navigate(['/studs']);
+    })
+  }
+
+
+// Service
+// ng g s student 
+
+import { Injectable } from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Istudent } from './Student';
+
+public _url = "https://api-mstud.herokuapp.com/";
+
+  constructor(private _http:HttpClient) { }
+
+  getstud():Observable<Istudent[]>{
+   return this._http.get<Istudent[]>(this._url+"display");
+  }
+
+  save(stud:Istudent){
+    return this._http.post(this._url + "addstud",stud);
+  }
+
+  delstud(id){
+    return this._http.delete(this._url +"delete/"+id);
+  }
+
+  updatestud(stud){
+    return this._http.put(this._url +"updatestud",stud);
+  }
+
+Student.ts file :
+export class Istudent{
+    _id?:number;
+    name:string;
+    city?:string;
+    pswd?:string;
+}
